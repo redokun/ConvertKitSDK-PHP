@@ -358,7 +358,7 @@ class ConvertKit_API
 
         $options = array(
             'api_secret' => $this->api_secret,
-            'status' => 'all',
+            'email_address' => $email_address,
         );
 
         $this->create_log(sprintf("GET subscriber id from all subscribers: %s, %s, %s", $request, json_encode($options),
@@ -377,30 +377,7 @@ class ConvertKit_API
             return $subscriber_id;
         }
 
-        $total_pages = $subscribers->total_pages;
-
-        $this->create_log(sprintf("Total number of pages is %s", $total_pages));
-
-        for ($i = 2; $i <= $total_pages; $i++) {
-            $options['page'] = $i;
-            $this->create_log(sprintf("Go to page %s", $i));
-            $subscribers = $this->make_request($request, 'GET', $options);
-
-            if (!$subscribers) {
-                return false;
-            }
-
-            $subscriber_id = $this::check_if_subscriber_in_array($email_address, $subscribers->subscribers);
-
-            if ($subscriber_id) {
-                return $subscriber_id;
-            }
-        }
-
-        $this->create_log("Subscriber not found anywhere");
-
         return false;
-
     }
 
     /**
@@ -426,6 +403,30 @@ class ConvertKit_API
         $this->create_log(sprintf("GET subscriber tags: %s, %s, %s", $request, json_encode($options), $subscriber_id));
 
         return $this->make_request($request, 'GET', $options);
+
+    }
+
+    /**
+     * Update subscriber by id
+     *
+     * @param $subscriber_id int
+     *
+     * @return false|int
+     */
+    public function update_subscriber($subscriber_id, array $options)
+    {
+
+        if (!is_int($subscriber_id) || $subscriber_id < 1) {
+            throw new \InvalidArgumentException;
+        }
+
+        $request = $this->api_version . sprintf('/subscribers/%s', $subscriber_id);
+
+        $options['api_secret'] = $this->api_secret;
+
+        $this->create_log(sprintf("PUT subscriber: %s, %s, %s", $request, json_encode($options), $subscriber_id));
+
+        return $this->make_request($request, 'PUT', $options);
 
     }
 
