@@ -469,6 +469,23 @@ class ConvertKit_API
 
     }
 
+    public function create_tag($tag)
+    {
+        $request = $this->api_version . '/tags';
+
+        $options = array(
+            'api_key' => $this->api_key,
+            'tag' => [
+                'name' => $tag
+            ],
+        );
+
+        $this->create_log(sprintf("POST tags: %s, %s", $request, json_encode($options)));
+
+        return $this->make_request($request, 'POST', $options);
+
+    }
+
     /**
      * @param $options
      *
