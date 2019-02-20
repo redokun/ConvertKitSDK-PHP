@@ -455,6 +455,20 @@ class ConvertKit_API
 
     }
 
+    public function get_tags()
+    {
+        $request = $this->api_version . '/tags';
+
+        $options = array(
+            'api_key' => $this->api_key,
+        );
+
+        $this->create_log(sprintf("GET tags: %s, %s", $request, json_encode($options)));
+
+        return $this->make_request($request, 'GET', $options);
+
+    }
+
     /**
      * @param $options
      *
